@@ -1,5 +1,5 @@
 <div class="flex justify-center flex-col mt-16 px-0 lg:flex-row sm:items-center sm:justify-between">
-    <div class="text-center text-xs text-gray-500 dark:text-gray-400 ">
+    <div class="text-center text-xs text-gray-500 dark:text-gray-600 ">
         <div class="w-full">Created from Leandro with ❤ in Berlin</div>
     </div>
 

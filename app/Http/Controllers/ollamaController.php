@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Prompt;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
 use Cloudstudio\Ollama\Facades\Ollama;
@@ -11,7 +12,11 @@ class OllamaController extends Controller
 
     public function prompt(Request $request): View
     {
+        $promptText = $request->input('promptText') ?? 'What is the meaning of life?';
 
+        Prompt::create([
+            'prompt' => $promptText
+        ]);
         return view('prompt');
     }
 
