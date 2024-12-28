@@ -1,4 +1,4 @@
-<div id="response" class="flex w-full flex-col items-start block p-3 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+<div id="response" class="flex w-full flex-col items-start p-3 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
     <h2 class="first-letter:capitalize text-xl font-semibold text-gray-900 dark:text-white">{{$promptText}}</h2>
     <div
         class="m-4 flex self-end flex-row justify-start gap-x-2 text-slate-500"
@@ -37,7 +37,7 @@
                 ></path>
             </svg>
         </button>--}}
-        <button class="hover:text-blue-600" type="button" onclick={copyToClipboard()}>
+        <button type="button" onclick="copyToClipboard()" class="hover:text-blue-600">
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="h-5 w-5"
@@ -59,7 +59,7 @@
         </button>
     </div>
         <x-markdown id="response--body" class="dark:text-white">
-            {!! $response['response']  !!}
+
         </x-markdown>
     <div
         class="m-4 flex self-end flex-row justify-start gap-x-2 text-slate-500 lg:mt-0"
@@ -98,7 +98,7 @@
                         ></path>
                     </svg>
                 </button>--}}
-        <button class="hover:text-blue-600" type="button" onclick={copyToClipboard()}>
+        <button type="button" onclick="copyToClipboard()" class="hover:text-blue-600">
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="h-5 w-5"
