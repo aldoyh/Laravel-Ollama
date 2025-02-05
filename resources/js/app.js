@@ -1,56 +1,76 @@
 import './bootstrap';
 
-window.addEventListener("load", (event) => {
-    document.querySelector("#spinner").classList.add("hidden");
+// Constants
+
+const SELECTORS = {
+    spinner: '#spinner',
+    response: '#response',
+    form: '#ollamaPrompt',
+    input: '#promptText',
+    submit: '#submit',
+    responseBody: '#response--body'
+};
+
+// Event Handlers
+document.addEventListener('DOMContentLoaded', () => {
+    const elements = getElements();
+
+    // Hide spinner on load
+    elements.spinner.classList.add('hidden');
+
+    // Form submission
+    elements.form.addEventListener('submit', () => {
+        elements.spinner.classList.remove('hidden');
+        elements.response.classList.add('hidden');
+    });
+
+    // Input validation
+    elements.input.addEventListener('input', (e) => {
+        elements.submit.disabled = !e.target.value.trim();
+    });
 });
 
-document.querySelector("#ollamaPrompt").addEventListener("submit", (e) => {
-   document.querySelector("#spinner").classList.remove("hidden");
-    document.querySelector("#response").classList.add("hidden");
+// Utility Functions
+const getElements = () => ({
+    spinner: document.querySelector(SELECTORS.spinner),
+    response: document.querySelector(SELECTORS.response),
+    form: document.querySelector(SELECTORS.form),
+    input: document.querySelector(SELECTORS.input),
+    submit: document.querySelector(SELECTORS.submit),
+    responseBody: document.querySelector(SELECTORS.responseBody)
 });
 
-document.querySelector("#promptText").addEventListener("keyup", (e) => {
-    if(document.querySelector("#promptText").value.length > 0) {
-        document.querySelector("#submit").removeAttribute('disabled');
-    }else{
-        document.querySelector("#submit").setAttribute("disabled", true);
-    }
-
-});
-
-
-window.copyToClipboard = async() => {
-
-    const generated = document.querySelector("#response--body").innerHTML;
-    const formatted = htmltoText(generated)
-    console.log(formatted)
-
+window.copyToClipboard = async () => {
     try {
-        await navigator.clipboard.writeText(formatted);
+        const responseText = document.querySelector(SELECTORS.responseBody).innerHTML;
+        const formattedText = htmlToText(responseText);
+        await navigator.clipboard.writeText(formattedText);
         console.log('Content copied to clipboard');
     } catch (err) {
-        console.error('Failed to copy: ', err);
+        console.error('Failed to copy:', err);
     }
-}
+};
 
+window.htmlToText = (html) => {
+    const replacements = [
+        [/\n/g, ''],
+        [/<style([\s\S]*?)<\/style>/gi, ''],
+        [/<script([\s\S]*?)<\/script>/gi, ''],
+        [/<a.*?href="(.*?)[\?\"].*?>(.*?)<\/a.*?>/gi, ' $2 $1 '],
+        [/<\/div>/gi, '\n\n'],
+        [/<\/li>/gi, '\n'],
+        [/<li.*?>/gi, '  *  '],
+        [/<\/ul>/gi, '\n\n'],
+        [/<\/p>/gi, '\n\n'],
+        [/<br\s*[\/]?>/gi, '\n'],
+        [/<[^>]+>/gi, ''],
+        [/^\s*/gm, ''],
+        [/ ,/g, ','],
+        [/ +/g, ' '],
+        [/\n+/g, '\n\n'],
+        [/;/g, ';\n\n']
+    ];
 
-window.htmltoText = (string) => {
-    let text = string;
-    text = text.replace(/\n/gi, "");
-    text = text.replace(/<style([\s\S]*?)<\/style>/gi, "");
-    text = text.replace(/<script([\s\S]*?)<\/script>/gi, "");
-    text = text.replace(/<a.*?href="(.*?)[\?\"].*?>(.*?)<\/a.*?>/gi, " $2 $1 ");
-    text = text.replace(/<\/div>/gi, "\n\n");
-    text = text.replace(/<\/li>/gi, "\n");
-    text = text.replace(/<li.*?>/gi, "  *  ");
-    text = text.replace(/<\/ul>/gi, "\n\n");
-    text = text.replace(/<\/p>/gi, "\n\n");
-    text = text.replace(/<br\s*[\/]?>/gi, "\n");
-    text = text.replace(/<[^>]+>/gi, "");
-    text = text.replace(/^\s*/gim, "");
-    text = text.replace(/ ,/gi, ",");
-    text = text.replace(/ +/gi, " ");
-    text = text.replace(/\n+/gi, "\n\n");
-    text = text.replace(/;/gi, ";\n\n");
-    return text;
+    return replacements.reduce((text, [pattern, replacement]) =>
+        text.replace(pattern, replacement), html);
 };

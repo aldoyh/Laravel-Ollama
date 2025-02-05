@@ -13,4 +13,11 @@
     <div class="text-center text-xs text-gray-500 dark:text-gray-400">
         Laravel v{{ Illuminate\Foundation\Application::VERSION }} (PHP v{{ PHP_VERSION }})
     </div>
+    <x-dark-mode-switcher-component />
+    <div class="text-center text-xs text-gray-500 dark:text-gray-400">
+        <a href="https://ollama.ai/">
+            <img src="" alt="Ollama Logo" class="w-8 h-8 mx-auto mt-2">
+        </a>
+    </div>
+    
 </div>

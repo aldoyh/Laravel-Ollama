@@ -22,3 +22,5 @@ Route::get(
 Route::post(
     '/', [OllamaController::class, 'answer']
 );
+
+Route::get('/ollama-status', [OllamaController::class, 'checkStatus'])->name('ollama.status');

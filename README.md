@@ -1,9 +1,16 @@
 # Laravel Ollama boilerplate
-This project contains a Laravel boilerplate with [Cloudstudio Ollama-Laravel](https://github.com/cloudstudio/ollama-laravel) 
-and [Spatie Laravel-markdown](https://spatie.be/index.php/docs/laravel-markdown/v1/introduction) packages preinstalled to use Ollama LLM Models locally with Laravel.
 
+A robust Laravel application integrating [Cloudstudio Ollama-Laravel](https://github.com/cloudstudio/ollama-laravel) and [Spatie Laravel-markdown](https://spatie.be/docs/laravel-markdown/v1/introduction) for local LLM integration.
 
 ![](public/screenshot.png)
+
+## Features
+
+- Local LLM integration with Ollama
+- Markdown rendering support
+- Real-time responses
+- Copy-to-clipboard functionality
+- Dark mode support
 
 ## What is what
 
@@ -12,6 +19,13 @@ and [Spatie Laravel-markdown](https://spatie.be/index.php/docs/laravel-markdown/
 **Ollama-Laravel** is a Laravel package that provides a seamless integration with the Ollama API. It includes functionalities for model management, prompt generation, format setting, and more. This package is perfect for developers looking to leverage the power of the Ollama API in their Laravel applications. Chek [Ollama-Laravel usage](https://github.com/cloudstudio/ollama-laravel?tab=readme-ov-file#usage) for more details.
 
 **Laravel Markdown** is used render Markdown in a Laravel Blade view.
+
+## Prerequisites
+
+- PHP 8.1 or higher
+- Node.js 16+ and NPM/PNPM
+- [Ollama](https://ollama.ai/) installed locally
+- Composer
 
 ## Environment
 - You should have [Ollama](https://ollama.ai/) installed locally
@@ -36,10 +50,7 @@ and [Spatie Laravel-markdown](https://spatie.be/index.php/docs/laravel-markdown/
 `npm run dev`  
 8. Go to localhost:8000
 
-
-
 <hr>
-
 
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 

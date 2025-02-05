@@ -2,14 +2,52 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StorePromptRequest;
+use App\Http\Requests\UpdatePromptRequest;
 use App\Models\Prompt;
 use Laravel\Prompts\Prompts;
-
-
-
+use App\Services\GroqService;
+use Cloudstudio\Ollama\Facades\Ollama as FacadesOllama;
+use CloudStudio\OllamaLaravel\Facades\Ollama;
+use Illuminate\Http\Request;
 
 class PromptController extends Controller
 {
+    protected $groqService;
+
+    public function __construct(GroqService $groqService)
+    {
+        $this->groqService = $groqService;
+    }
+
+    public function __invoke(Request $request)
+    {
+        try {
+            $promptText = $request->input('prompt');
+            $response = FacadesOllama::ask($promptText);
+
+            return view('prompt', [
+                'promptText' => $promptText,
+                'response' => $response
+            ]);
+        } catch (\Exception $e) {
+            // Fallback to Groq if Ollama fails
+            try {
+                $response = $this->groqService->generateResponse($promptText);
+
+                return view('prompt', [
+                    'promptText' => $promptText,
+                    'response' => $response
+                ]);
+            } catch (\Exception $fallbackError) {
+                return view('prompt', [
+                    'promptText' => $promptText,
+                    'errorMessage' => 'Both primary and backup AI services failed.'
+                ]);
+            }
+        }
+    }
+
     /**
      * Display a listing of the resource.
      */

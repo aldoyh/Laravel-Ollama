@@ -46,9 +46,9 @@ class OllamaController extends Controller
         }
 
         try {
-            
+
             $response = Ollama::prompt($promptText)
-                ->model('llama2')
+                ->model('llama3.2')
                 // ->model('mistral')
                 ->options(['temperature' => 0.8])
                 ->stream(false)

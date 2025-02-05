@@ -26,5 +26,7 @@
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
+        <env name="OLLAMA_BASE_URL" value="http://localhost:11434"/>
+        <env name="XAI_BASE_URL" value="http://localhost:3000"/>
     </php>
 </phpunit>
