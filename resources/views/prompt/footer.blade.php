@@ -1,4 +1,4 @@
-<div class="flex justify-center flex-col mt-16 px-0 lg:flex-row sm:items-center sm:justify-between">
+<div class="flex justify-center flex-col mt-16 px-0 lg:flex-row sm:items-center sm:justify-between transition-colors duration-300">
     <div class="text-center text-xs text-gray-500 dark:text-gray-600 ">
         <div class="w-full">Created from Leandro with ❤ in Berlin</div>
     </div>
@@ -15,8 +15,10 @@
     </div>
     <x-dark-mode-switcher-component />
     <div class="text-center text-xs text-gray-500 dark:text-gray-400">
-        <a href="https://ollama.ai/">
-            <img src="" alt="Ollama Logo" class="w-8 h-8 mx-auto mt-2">
+        <a href="https://ollama.ai/" class="hover:opacity-75 transition-opacity">
+            <img src="https://raw.githubusercontent.com/jmorganca/ollama/main/docs/ollama.png" 
+                 alt="Ollama Logo" 
+                 class="w-8 h-8 mx-auto mt-2">
         </a>
     </div>
     
