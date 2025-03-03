@@ -13,7 +13,7 @@ class PromptPolicy
      */
     public function viewAny(User $user): bool
     {
-        //
+        return true; // All authenticated users can view prompts
     }
 
     /**
@@ -21,7 +21,8 @@ class PromptPolicy
      */
     public function view(User $user, Prompt $prompt): bool
     {
-        //
+        // Users can view their own prompts or public prompts
+        return $user->id === $prompt->user_id;
     }
 
     /**
@@ -29,7 +30,7 @@ class PromptPolicy
      */
     public function create(User $user): bool
     {
-        //
+        return true; // All authenticated users can create prompts
     }
 
     /**
@@ -37,7 +38,7 @@ class PromptPolicy
      */
     public function update(User $user, Prompt $prompt): bool
     {
-        //
+        return $user->id === $prompt->user_id;
     }
 
     /**
@@ -45,7 +46,7 @@ class PromptPolicy
      */
     public function delete(User $user, Prompt $prompt): bool
     {
-        //
+        return $user->id === $prompt->user_id;
     }
 
     /**
@@ -53,7 +54,7 @@ class PromptPolicy
      */
     public function restore(User $user, Prompt $prompt): bool
     {
-        //
+        return $user->id === $prompt->user_id;
     }
 
     /**
@@ -61,6 +62,18 @@ class PromptPolicy
      */
     public function forceDelete(User $user, Prompt $prompt): bool
     {
-        //
+        return $user->id === $prompt->user_id;
+    }
+
+    /**
+     * Perform pre-authorization checks.
+     */
+    public function before(User $user): ?bool
+    {
+        if ($user->is_admin) {
+            return true;
+        }
+
+        return null;
     }
 }

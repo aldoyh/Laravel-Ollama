@@ -14,17 +14,28 @@ return new class extends Migration
         Schema::create('prompts', function (Blueprint $table) {
             $table->id();
 
-            // Prompt
-            $table->string('prompt');
+            // User relationship
+            $table->foreignId('user_id')
+                  ->constrained()
+                  ->onDelete('cascade');
 
-            // Response
-            $table->string('response')->nullable();
+            // Prompt text - using text instead of string for longer content
+            $table->text('prompt');
 
-            // Model
-            $table->string('model')->default('llama3');
+            // Response - using text instead of string for longer content
+            $table->text('response')->nullable();
 
-            // Created at and updated at
+            // Model selection
+            $table->string('model')
+                  ->default('llama3')
+                  ->comment('The AI model used for this prompt');
+
+            // Timestamps
             $table->timestamps();
+
+            // Add indexes
+            $table->index('user_id');
+            $table->index('created_at');
         });
     }
 

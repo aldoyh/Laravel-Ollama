@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Prompt extends Model
 {
@@ -15,38 +16,41 @@ class Prompt extends Model
         'model'
     ];
 
-    public function user()
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
+    /**
+     * Get the user that owns the prompt.
+     */
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function model()
+    /**
+     * Validate and set the prompt text.
+     *
+     * @param string $prompt
+     * @return void
+     * @throws \InvalidArgumentException
+     */
+    public function setPrompt(string $prompt): void
     {
-        return $this->belongsTo(Model::class);
+        if (empty(trim($prompt))) {
+            throw new \InvalidArgumentException('Prompt cannot be empty');
+        }
+        $this->prompt = trim($prompt);
     }
 
-    public function getPromptText()
-    {
-        return $this->prompt_text;
-    }
-
-    public function getResponse()
-    {
-        return $this->response;
-    }
-
-    public function getModel()
-    {
-        return $this->model;
-    }
-
-
-    public function setPromptText($prompt_text)
-    {
-        $this->prompt_text = $prompt_text;
-    }
-
-    public function setResponse($response)
+    /**
+     * Set the response for this prompt.
+     *
+     * @param string|null $response
+     * @return void
+     */
+    public function setResponse(?string $response): void
     {
         $this->response = $response;
     }

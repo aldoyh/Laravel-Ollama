@@ -5,127 +5,139 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePromptRequest;
 use App\Http\Requests\UpdatePromptRequest;
 use App\Models\Prompt;
-use Laravel\Prompts\Prompts;
 use App\Services\GroqService;
-use Cloudstudio\Ollama\Facades\Ollama as FacadesOllama;
-use CloudStudio\OllamaLaravel\Facades\Ollama;
+use Cloudstudio\Ollama\Facades\Ollama;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class PromptController extends Controller
 {
-    protected $groqService;
+    public function __construct(
+        protected GroqService $groqService
+    ) {}
 
-    public function __construct(GroqService $groqService)
+    /**
+     * Handle the incoming request for AI response generation.
+     */
+    public function __invoke(Request $request): View
     {
-        $this->groqService = $groqService;
-    }
+        $promptText = $request->input('prompt');
+        $response = null;
+        $error = null;
 
-    public function __invoke(Request $request)
-    {
         try {
-            $promptText = $request->input('prompt');
-            $response = FacadesOllama::ask($promptText);
+            $response = Ollama::ask($promptText);
 
-            return view('prompt', [
-                'promptText' => $promptText,
-                'response' => $response
-            ]);
+            // Store the successful interaction
+            $this->storePrompt($promptText, $response);
         } catch (\Exception $e) {
-            // Fallback to Groq if Ollama fails
+            Log::error('Ollama service failed', [
+                'error' => $e->getMessage(),
+                'prompt' => $promptText
+            ]);
+
             try {
                 $response = $this->groqService->generateResponse($promptText);
-
-                return view('prompt', [
-                    'promptText' => $promptText,
-                    'response' => $response
-                ]);
+                $this->storePrompt($promptText, $response, 'groq');
             } catch (\Exception $fallbackError) {
-                return view('prompt', [
-                    'promptText' => $promptText,
-                    'errorMessage' => 'Both primary and backup AI services failed.'
+                Log::error('Groq service failed', [
+                    'error' => $fallbackError->getMessage(),
+                    'prompt' => $promptText
                 ]);
+                $error = 'Both primary and backup AI services failed.';
             }
         }
+
+        return view('prompt', compact('promptText', 'response', 'error'));
     }
 
     /**
-     * Display a listing of the resource.
+     * Display a listing of the prompts.
      */
-    public function index()
+    public function index(): View
     {
-        // Retrieve all prompts from the database
-        $prompts = Prompt::all();
+        $prompts = Prompt::with('user')
+            ->latest()
+            ->paginate(20);
 
-        // Return the prompts as a response
-        return response()->json($prompts);
+        return view('prompts.index', compact('prompts'));
     }
 
-
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new prompt.
      */
-    public function create()
+    public function create(): View
     {
-        // Return the view for creating a new prompt
         return view('prompts.create');
     }
 
-
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created prompt in storage.
      */
-    public function store(StorePromptRequest $request)
+    public function store(StorePromptRequest $request): JsonResponse
     {
-        // Create a new prompt with the validated data
-        $prompt = Prompt::create($request->validated());
+        $prompt = new Prompt($request->validated());
+        $prompt->user_id = $request->user()->id;
+        $prompt->save();
 
-        // Return the created prompt as a response
         return response()->json($prompt, 201);
     }
 
-
     /**
-     * Display the specified resource.
+     * Display the specified prompt.
      */
-    public function show(Prompt $prompt)
+    public function show(Prompt $prompt): View
     {
-        // Return the specified prompt as a response
-        return response()->json($prompt);
+        $this->authorize('view', $prompt);
+        return view('prompts.show', compact('prompt'));
     }
 
-
     /**
-     * Show the form for editing the specified resource.
+     * Show the form for editing the specified prompt.
      */
-    public function edit(Prompt $prompt)
+    public function edit(Prompt $prompt): View
     {
-        // Return the view for editing the specified prompt
+        $this->authorize('update', $prompt);
         return view('prompts.edit', compact('prompt'));
     }
 
-
     /**
-     * Update the specified resource in storage.
+     * Update the specified prompt in storage.
      */
-    public function update(UpdatePromptRequest $request, Prompt $prompt)
+    public function update(UpdatePromptRequest $request, Prompt $prompt): JsonResponse
     {
-        // Update the prompt with the validated data
+        $this->authorize('update', $prompt);
         $prompt->update($request->validated());
 
-        // Return the updated prompt as a response
         return response()->json($prompt);
     }
 
-
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified prompt from storage.
      */
-    public function destroy(Prompt $prompt)
+    public function destroy(Prompt $prompt): JsonResponse
     {
-        // Delete the specified prompt from the database
+        $this->authorize('delete', $prompt);
         $prompt->delete();
 
-        // Return a success message as a response
         return response()->json(['message' => 'Prompt deleted successfully']);
+    }
+
+    /**
+     * Store a prompt and its response.
+     */
+    protected function storePrompt(string $promptText, ?string $response, string $model = 'llama3'): void
+    {
+        if (Auth::check()) {
+            Prompt::create([
+                'user_id' => Auth::id(),
+                'prompt' => $promptText,
+                'response' => $response,
+                'model' => $model
+            ]);
+        }
     }
 }

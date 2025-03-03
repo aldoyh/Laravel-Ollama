@@ -17,3 +17,12 @@ use Illuminate\Support\Facades\Artisan;
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
+
+// AI chat for the client
+Artisan::command('ai:chat', function () {
+
+    $this->comment('AI chat for the client');
+
+    // Add your AI chat logic here
+    // TODO: Implement AI chat logic
+})->purpose('AI chat for the client');
